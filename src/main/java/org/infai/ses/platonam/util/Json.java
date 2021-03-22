@@ -74,21 +74,9 @@ public class Json {
     private static Number parse(String str) {
         Number number;
         try {
-            number = Integer.parseInt(str);
+            number = Long.parseLong(str);
         } catch (NumberFormatException e) {
-            try {
-                number = Long.parseLong(str);
-            } catch (NumberFormatException e1) {
-                try {
-                    number = Float.parseFloat(str);
-                } catch (NumberFormatException e2) {
-                    try {
-                        number = Double.parseDouble(str);
-                    } catch (NumberFormatException e3) {
-                        throw e3;
-                    }
-                }
-            }
+            number = Double.parseDouble(str);
         }
         return number;
     }
