@@ -17,19 +17,20 @@
 
 package org.infai.ses.platonam.util;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 
 public class IO {
     public static String stringFromStream(InputStream inputStream) throws IOException {
-        StringBuilder resultString = new StringBuilder();
-        int b = inputStream.read();
-        while (b != -1) {
-            resultString.append(((char) b));
-            b = inputStream.read();
+        Reader reader = new InputStreamReader(inputStream);
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        for (int length = 0; (length = reader.read(buffer)) > 0; ) {
+            writer.write(buffer, 0, length);
         }
         inputStream.close();
-        return resultString.toString();
+        reader.close();
+        writer.close();
+        return writer.toString();
     }
 }
