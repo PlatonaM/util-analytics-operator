@@ -72,13 +72,11 @@ public class Json {
     }
 
     private static Number parse(String str) {
-        Number number;
         try {
-            number = Long.parseLong(str);
+            return Long.parseLong(str);
         } catch (NumberFormatException e) {
-            number = Double.parseDouble(str);
+            return Double.parseDouble(str);
         }
-        return number;
     }
 
     private static class MapDeserializer implements JsonDeserializer<Map<String, Object>> {
@@ -87,14 +85,12 @@ public class Json {
             Map<String, Object> m = new LinkedTreeMap<>();
             JsonObject jo = json.getAsJsonObject();
             for (Map.Entry<String, JsonElement> mx : jo.entrySet()) {
-                Object value;
                 if (mx.getValue().isJsonPrimitive()) {
                     try {
-                        value = parse(mx.getValue().getAsString());
+                        m.put(mx.getKey(), parse(mx.getValue().getAsString()));
                     } catch (Exception e) {
-                        value = context.deserialize(mx.getValue(), Object.class);
+                        m.put(mx.getKey(), context.deserialize(mx.getValue(), Object.class));
                     }
-                    m.put(mx.getKey(), value);
                 } else if (mx.getValue().isJsonArray()) {
                     m.put(mx.getKey(), context.deserialize(mx.getValue(), List.class));
                 } else if (mx.getValue().isJsonObject()) {
@@ -113,14 +109,12 @@ public class Json {
             List<Object> l = new ArrayList<>();
             JsonArray ja = json.getAsJsonArray();
             for (JsonElement ax : ja) {
-                Object value;
                 if (ax.isJsonPrimitive()) {
                     try {
-                        value = parse(ax.getAsString());
+                        l.add(parse(ax.getAsString()));
                     } catch (Exception e) {
-                        value = context.deserialize(ax, Object.class);
+                        l.add(context.deserialize(ax, Object.class));
                     }
-                    l.add(value);
                 } else if (ax.isJsonArray()) {
                     l.add(context.deserialize(ax, List.class));
                 } else if (ax.isJsonObject()) {

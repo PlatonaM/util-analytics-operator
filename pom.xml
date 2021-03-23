@@ -22,7 +22,7 @@
     <groupId>org.infai.ses.platonam</groupId>
     <artifactId>util-analytics-operator</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 
     <dependencies>
         <dependency>
