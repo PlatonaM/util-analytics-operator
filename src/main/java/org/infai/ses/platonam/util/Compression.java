@@ -17,30 +17,31 @@
 
 package org.infai.ses.platonam.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static org.infai.ses.platonam.util.IO.stringFromStream;
 
-
 public class Compression {
-    public static String decompress(String data) throws IOException {
-        byte[] bytes = Base64.getDecoder().decode(data);
-        InputStream inputStream = new ByteArrayInputStream(bytes);
-        return stringFromStream(new GZIPInputStream(inputStream));
+    public static String decompressToString(String data) throws IOException {
+        return stringFromStream(new GZIPInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(data))));
+    }
+
+    public static InputStream decompressToStream(String data) throws IOException {
+        return new GZIPInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(data)));
     }
 
     public static String compress(String str) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Base64.getEncoder().withoutPadding().wrap(outputStream));
         gzipOutputStream.write(str.getBytes());
         gzipOutputStream.close();
-        byte[] bytes = outputStream.toByteArray();
-        return Base64.getEncoder().withoutPadding().encodeToString(bytes);
+        return outputStream.toString();
+    }
+
+    public static OutputStream compress(OutputStream outputStream) throws IOException {
+        return new GZIPOutputStream(Base64.getEncoder().withoutPadding().wrap(outputStream));
     }
 }
