@@ -20,7 +20,10 @@ package org.infai.ses.platonam.util;
 import com.google.gson.*;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,38 +31,65 @@ import java.util.Map;
 
 public class Json {
 
-    public static String toJSON(Map<String, Object> data) {
+    public static String toString(Map<String, Object> data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         Type collectionType = new TypeToken<Map<String, Object>>() {
         }.getType();
         return gson.toJson(data, collectionType);
     }
 
-    public static String toJSON(List<Map<String, Object>> data) {
+    public static String toString(List<Map<String, Object>> data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         Type collectionType = new TypeToken<List<Map<String, Object>>>() {
         }.getType();
         return gson.toJson(data, collectionType);
     }
 
-    public static List<Map<String, Object>> typeSafeMapListFromJson(String data) {
+    public static void toStream(List<Map<String, Object>> data, OutputStream outputStream) throws IOException {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream));
+        jsonWriter.beginArray();
+        Type collectionType = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        for (Map<String, Object> item : data) {
+            gson.toJson(item, collectionType, jsonWriter);
+        }
+        jsonWriter.endArray();
+        jsonWriter.close();
+    }
+
+    public static List<Map<String, Object>> typeSafeMapListFromString(String data) {
         Gson gson = getTypeSafeGson();
         return gson.fromJson(data, new TypeToken<List<Map<String, Object>>>() {
         }.getType());
     }
 
-    public static Map<String, Object> typeSafeMapFromJson(String data) {
+    public static Map<String, Object> typeSafeMapFromString(String data) {
         Gson gson = getTypeSafeGson();
         return gson.fromJson(data, new TypeToken<Map<String, Object>>() {
         }.getType());
     }
 
-    public static List<Map<String, Object>> listMapFromJson(String data) {
+    public static List<Map<String, Object>> typeSafeMapListFromStream(InputStream inputStream) throws IOException {
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        Gson gson = getTypeSafeGson();
+        JsonReader jsonReader = new JsonReader(new InputStreamReader(inputStream));
+        jsonReader.beginArray();
+        while (jsonReader.hasNext()) {
+            mapList.add(gson.fromJson(jsonReader, new TypeToken<Map<String, Object>>() {
+            }.getType()));
+        }
+        jsonReader.endArray();
+        jsonReader.close();
+        return mapList;
+    }
+
+    public static List<Map<String, Object>> listMapFromString(String data) {
         return new Gson().fromJson(data, new TypeToken<List<Map<String, Object>>>() {
         }.getType());
     }
 
-    public static Map<String, Object> mapFromJson(String data) {
+    public static Map<String, Object> mapFromString(String data) {
         return new Gson().fromJson(data, new TypeToken<Map<String, Object>>() {
         }.getType());
     }
