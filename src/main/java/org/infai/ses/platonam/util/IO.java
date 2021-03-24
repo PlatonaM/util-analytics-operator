@@ -28,9 +28,9 @@ public class IO {
         for (int length = 0; (length = reader.read(buffer)) > 0; ) {
             writer.write(buffer, 0, length);
         }
-        inputStream.close();
         reader.close();
         writer.close();
+        inputStream.close();
         return writer.toString();
     }
 }

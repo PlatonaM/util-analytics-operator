@@ -38,6 +38,7 @@ public class Compression {
         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Base64.getEncoder().withoutPadding().wrap(outputStream));
         gzipOutputStream.write(str.getBytes());
         gzipOutputStream.close();
+        outputStream.close();
         return outputStream.toString();
     }
 
