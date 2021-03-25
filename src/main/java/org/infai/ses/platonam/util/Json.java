@@ -36,10 +36,6 @@ public class Json {
         return gson.toJson(data, type);
     }
 
-    public static String toString(TypeToken<?> typeToken, Object data) {
-        return toString(typeToken.getType(), data);
-    }
-
     public static void toStream(Type type, List<?> data, OutputStream outputStream) throws IOException {
         Gson gson = new GsonBuilder().serializeNulls().create();
         JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream));
