@@ -47,10 +47,6 @@ public class Json {
         jsonWriter.close();
     }
 
-    public static void toStream(TypeToken<?> typeToken, List<?> data, OutputStream outputStream) throws IOException {
-        toStream(typeToken.getType(), data, outputStream);
-    }
-
     public static <T> T fromString(String str, TypeToken<T> typeToken) {
         Gson gson = getTypeSafeGson();
         return gson.fromJson(str, typeToken.getType());
