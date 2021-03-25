@@ -31,68 +31,62 @@ import java.util.Map;
 
 public class Json {
 
-    public static String toString(Map<String, Object> data) {
+    public static String toString(Type type, Object data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        return gson.toJson(data, collectionType);
+        return gson.toJson(data, type);
     }
 
-    public static String toString(List<Map<String, Object>> data) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<List<Map<String, Object>>>() {
-        }.getType();
-        return gson.toJson(data, collectionType);
+    public static String toString(TypeToken<?> typeToken, Object data) {
+        return toString(typeToken.getType(), data);
     }
 
-    public static void toStream(List<Map<String, Object>> data, OutputStream outputStream) throws IOException {
+    public static void toStream(Type type, List<?> data, OutputStream outputStream) throws IOException {
         Gson gson = new GsonBuilder().serializeNulls().create();
         JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream));
         jsonWriter.beginArray();
-        Type collectionType = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        for (Map<String, Object> item : data) {
-            gson.toJson(item, collectionType, jsonWriter);
+        for (Object item : data) {
+            gson.toJson(item, type, jsonWriter);
         }
         jsonWriter.endArray();
         jsonWriter.close();
     }
 
-    public static List<Map<String, Object>> typeSafeMapListFromString(String data) {
-        Gson gson = getTypeSafeGson();
-        return gson.fromJson(data, new TypeToken<List<Map<String, Object>>>() {
-        }.getType());
+    public static void toStream(TypeToken<?> typeToken, List<?> data, OutputStream outputStream) throws IOException {
+        toStream(typeToken.getType(), data, outputStream);
     }
 
-    public static Map<String, Object> typeSafeMapFromString(String data) {
+    public static <T> T fromString(String str, TypeToken<T> typeToken) {
         Gson gson = getTypeSafeGson();
-        return gson.fromJson(data, new TypeToken<Map<String, Object>>() {
-        }.getType());
+        return gson.fromJson(str, typeToken.getType());
     }
 
-    public static List<Map<String, Object>> typeSafeMapListFromStream(InputStream inputStream) throws IOException {
-        List<Map<String, Object>> mapList = new ArrayList<>();
+    public static <T> T fromString(String str, Class<T> cls) {
+        Gson gson = getTypeSafeGson();
+        return gson.fromJson(str, cls);
+    }
+
+    public static <T> List<T> fromStreamToList(InputStream inputStream, TypeToken<T> typeToken) throws IOException {
+        List<T> list = new ArrayList<>();
+        fromStreamToList(inputStream, typeToken.getType(), list);
+        return list;
+    }
+
+    public static <T> List<T> fromStreamToList(InputStream inputStream, Class<T> cls) throws IOException {
+        List<T> list = new ArrayList<>();
+        fromStreamToList(inputStream, cls, list);
+        return list;
+    }
+
+    private static void fromStreamToList(InputStream inputStream, Type type, List<?> target) throws IOException {
         Gson gson = getTypeSafeGson();
         JsonReader jsonReader = new JsonReader(new InputStreamReader(inputStream));
         jsonReader.beginArray();
         while (jsonReader.hasNext()) {
-            mapList.add(gson.fromJson(jsonReader, new TypeToken<Map<String, Object>>() {
-            }.getType()));
+            target.add(gson.fromJson(jsonReader, type));
         }
         jsonReader.endArray();
         jsonReader.close();
         inputStream.close();
-        return mapList;
-    }
-
-    public static List<Map<String, Object>> listMapFromString(String data) {
-        return new Gson().fromJson(data, new TypeToken<List<Map<String, Object>>>() {
-        }.getType());
-    }
-
-    public static Map<String, Object> mapFromString(String data) {
-        return new Gson().fromJson(data, new TypeToken<Map<String, Object>>() {
-        }.getType());
     }
 
     private static Gson getTypeSafeGson() {
