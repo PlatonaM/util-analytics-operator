@@ -38,7 +38,7 @@ public class HttpRequest {
         try {
             CloseableHttpResponse response = httpclient.execute(request);
             try {
-                if (response.getStatusLine().getStatusCode() == 200) {
+                if (response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() <= 206) {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         return stringFromStream(entity.getContent());
